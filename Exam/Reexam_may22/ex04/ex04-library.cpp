@@ -11,17 +11,14 @@ SensorBuffer::SensorBuffer(int defaultValue, int minValue, int maxValue)
 }
 void SensorBuffer::write(int v)
 {
-    if (v > this->minValue && v < this->maxValue)
-    {
+    if ((v >= this->minValue) && (v <= this->maxValue)){
         this->storedValues.push_back(v);
     }
-    else if (v < this->minValue)
-    {
+    else if (v < this->minValue){
         this->storedValues.push_back(minValue);
         this->outOfRangeCounter++;
     }
-    else if (v > this->maxValue)
-    {
+    else{
         this->storedValues.push_back(maxValue);
         this->outOfRangeCounter++;
     }
@@ -32,8 +29,8 @@ int SensorBuffer::read() {
         return this->defaultValue;
     }else{
         int oldestElement = this->storedValues.front();
-    this->storedValues.erase(this->storedValues.begin());
-    return oldestElement;
+        this->storedValues.erase(this->storedValues.begin());
+        return oldestElement;
     }    
 }
 unsigned int SensorBuffer::faults() {

@@ -25,17 +25,36 @@ Hotel::Hotel()
 void Hotel::renameRoom(string oldName, string newName)
 {
     // Write your code here
-    for (int i = 0; i < this->roomNames.size(); i++)
-    {
-        if (this->roomNames.at(i) == oldName)
-        {
-            this->roomNames.at(i) = newName;
+    // for (int i = 0; i < this->roomNames.size(); i++)
+    // {
+    //     if (this->roomNames.at(i) == oldName){
+    //         this->roomNames[i] = newName;
+    //     }
+    // }
+    bool oldRoomExists = false;
+    unsigned int oldRoomPosition = 0;
+    bool newRoomExists = false;
 
-            auto nodeHandler = this->roomOccupancy.extract(oldName);
-            nodeHandler.key() = newName;
-            this->roomOccupancy.insert(move(nodeHandler));
-            return;
+    for (unsigned int i = 0; i < this->roomNames.size(); i++) {
+        if (this->roomNames[i] == oldName) {
+            oldRoomExists = true;
+            oldRoomPosition = i;
+        } else if (this->roomNames[i] == newName) {
+            newRoomExists = true;
+            break;
         }
+    }
+    if ((!oldRoomExists) || newRoomExists) {
+        return;
+    }
+
+    // Update the list of room names
+    this->roomNames[oldRoomPosition] = newName;
+
+    // Update the room occupancy
+    if (this->roomOccupancy.find(oldName) != this->roomOccupancy.end()) {
+        this->roomOccupancy[newName] = this->roomOccupancy[oldName];
+        this->roomOccupancy.erase(oldName);
     }
 }
 
@@ -43,34 +62,36 @@ void Hotel::renameRoom(string oldName, string newName)
 void Hotel::removeGuest(string roomName, string guestName, string guestId)
 {
     // Write your code here
-    for (int i = 0; i < this->roomOccupancy.size(); i++)
-    {
-        if (this->roomOccupancy.find(roomName) != this->roomOccupancy.end())
-        {
-            this->roomOccupancy.erase(roomName);
-        }
+    if (this->roomOccupancy.find(roomName) == this->roomOccupancy.end()){
+        return;
     }
+    Guest g = this->roomOccupancy.at(roomName);
+    if ((g.name == guestName) && g.id == guestId){
+        this->roomOccupancy.erase(roomName);
+    }
+    
+    
 }
 
 // Task 3(c).  Implement this method
 void Hotel::findRoomByGuestId(vector<string> guestIds)
 {
     // Write your code here
-    vector<string> rguestIds;
 
-    for (auto p : this->roomOccupancy)
-    {
-        if (find(guestIds.begin(), guestIds.end(), p.second.id) != guestIds.end())
-        {
-            rguestIds.push_back(p.first);
+    // for (auto p : this->roomOccupancy){
+    //     if (find(guestIds.begin(), guestIds.end(), p.second.id) != guestIds.end())
+    //     {
+    //         cout << p.first << endl;
+    //     }
+    // }
+
+    for (auto r: this->roomNames) {
+        for (auto id: guestIds) {
+            if (this->roomOccupancy[r].id == id) {
+                cout << r << endl;
+            }
         }
     }
-
-    for (int i = rguestIds.size() - 1; i >= 0 ; i--)
-    {
-        cout << rguestIds.at(i) << endl;
-    }
-    
 }
 
 // Do not modify
